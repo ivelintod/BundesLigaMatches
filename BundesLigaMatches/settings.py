@@ -134,6 +134,7 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+'''
 from celery.schedules import crontab
 # Other Celery settings
 CELERY_BEAT_SCHEDULE = {
@@ -150,3 +151,4 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab()
     }
 }
+'''

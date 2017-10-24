@@ -1,16 +1,19 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
-from rest_framework import generics
-from .models import MatchesBulkData
-from .serializers import MatchDaySerializer
+from rest_framework import viewsets
+from .models import MatchesBulkData, Team, Match
+from .serializers import MatchesBulkDataSerializer, TeamSerializer, MatchSerializer
 from .tasks import tasktest
 
 
-@csrf_exempt
-def check_celery(request):
-    #tasktest('da vidim')
-    return JsonResponse({'1': '2'}, status=200)
+class MatchesBulkDataViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = MatchesBulkData.objects.all()
+    serializer_class = MatchesBulkDataSerializer
 
+
+class TeamViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Team.objects.all()
+    serializer_class = TeamSerializer
+
+
+class MatchViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Match.objects.all()
+    serializer_class = MatchSerializer
