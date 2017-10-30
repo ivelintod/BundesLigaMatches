@@ -133,22 +133,3 @@ BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-
-'''
-from celery.schedules import crontab
-# Other Celery settings
-CELERY_BEAT_SCHEDULE = {
-    'task-number-one': {
-        'task': 'BLM.tasks.populate_matchday',
-        'schedule': crontab()
-    },
-    'task-number-two': {
-        'task': 'BLM.tasks.populate_teams',
-        'schedule': crontab()
-    },
-    'task-number-three': {
-        'task': 'BLM.tasks.populate_matches',
-        'schedule': crontab()
-    }
-}
-'''

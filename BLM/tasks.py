@@ -36,6 +36,7 @@ def populate_matchday():
 
 @shared_task
 def populate_teams():
+    Team.objects.all().delete()
     for match in CURRENT_MATCHDAY_DATA:
         for nr_team in ('1', '2'):
             team_db = Team(name=match['Team{}'.format(nr_team)]['TeamName'],
@@ -45,6 +46,7 @@ def populate_teams():
 
 @shared_task
 def populate_matches():
+    Match.objects.all().delete()
     for match in ALL_SEASON_MATCHES:
         host = Team.objects.get(name=match['Team1']['TeamName'])
         guest = Team.objects.get(name=match['Team2']['TeamName'])
@@ -55,3 +57,45 @@ def populate_matches():
         match_db = Match(host=host, guest=guest,
                          host_goals=host_goals, guest_goals=guest_goals)
         match_db.save()
+
+
+@shared_task
+def populate_team_fixtures():
+    for team in Team.objects.all():
+        fixtures_data = {}
+        team_host_matches = Match.objects.filter(host=team.pk)
+        team_guest_matches = Match.objects.filter(guest=team.pk)
+        fixtures_data['host_matches'] = []
+        fixtures_data['guest_matches'] = []
+        for match in team_host_matches:
+            fixtures_data['host_matches'].\
+                append({'opponent': match.guest.name,
+                        'host_goals': match.host_goals,
+                        'guest_goals': match.guest_goals})
+        for match in team_guest_matches:
+            fixtures_data['guest_matches'].\
+                append({'opponent': match.host.name,
+                        'host_goals': match.host_goals,
+                        'guest_goals': match.guest_goals})
+        team.fixtures = fixtures_data
+        team.save()
+
+
+'''
+class ImmediateSingleRun:
+
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
+
+    def __init__(self):
+        populate_matchday.delay()
+        populate_teams.delay()
+        populate_matches.delay()
+
+
+ImmediateSingleRun()
+'''
